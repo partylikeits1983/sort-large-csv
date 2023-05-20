@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import { createReadStream } from 'fs';
 
-const csvFilePath = 'src/output.csv'; // Your sorted file path
+const csvFilePath = 'output.csv'; // Your sorted file path
 
 async function verifyTimestampOrder(filePath: string): Promise<boolean> {
   let previousTimestamp = -1;
