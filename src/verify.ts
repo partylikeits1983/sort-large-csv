@@ -6,13 +6,16 @@ const csvFilePath = 'output.csv'; // Your sorted file path
 async function verifyTimestampOrder(filePath: string): Promise<boolean> {
   let previousTimestamp = -1;
 
-  const lineReader = readline.createInterface({ input: createReadStream(filePath), crlfDelay: Infinity });
+  const lineReader = readline.createInterface({
+    input: createReadStream(filePath),
+    crlfDelay: Infinity,
+  });
 
   for await (const line of lineReader) {
     const currentTimestamp = Number(line.split(',')[0]);
 
     if (previousTimestamp > currentTimestamp) {
-      console.log(line)
+      console.log(line);
       console.log('Timestamps are not in ascending order');
       return false;
     }

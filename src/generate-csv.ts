@@ -15,7 +15,8 @@ function getRandomFloat(min: number, max: number): number {
 
 // Function to generate a random alphanumeric hash
 function getRandomHash(length: number): string {
-  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const characters =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let hash = '';
   for (let i = 0; i < length; i++) {
     hash += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -30,7 +31,8 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
   const bytesPerRow = 47; // Assuming each field takes a fixed number of bytes
 
   const totalRows = Math.ceil((fileSizeInMB * 1024 * 1024) / bytesPerRow);
-  let csvContent = 'Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n';
+  let csvContent =
+    'Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n';
 
   for (let i = 0; i < totalRows; i++) {
     const timestamp = getRandomTimestamp(start, end);

@@ -15,19 +15,18 @@ const client = new Client({
 async function countRowsInCsvFile(filePath: string) {
   const readInterface = readline.createInterface({
     input: fs.createReadStream(filePath),
-    crlfDelay: Infinity
+    crlfDelay: Infinity,
   });
 
   let linesCount = 0;
   for await (const line of readInterface) {
     linesCount++;
   }
-  console.log(`Line count in CSV: ${linesCount}`)
+  console.log(`Line count in CSV: ${linesCount}`);
   return linesCount;
 }
 
 async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
-
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS csv_data (
@@ -38,7 +37,7 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
         store_id varchar
       )
     `);
-  
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_timestamp ON csv_data (timestamp);
     `);
@@ -48,25 +47,25 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
     let buffer = '';
     let totalRowsRead = 0;
     let batchRows: Array<{
-        timestamp: number;
-        price: number;
-        product_id: string;
-        customer_id: string;
-        store_id: number;
-      }> = [];
-  
+      timestamp: number;
+      price: number;
+      product_id: string;
+      customer_id: string;
+      store_id: number;
+    }> = [];
+
     for await (const chunk of stream) {
       buffer += chunk;
 
       const rows = buffer.trim().split('\n');
-      buffer = rows.pop() ?? ''; 
+      buffer = rows.pop() ?? '';
 
       for (const row of rows) {
         const values = row.split(',');
         const timestamp = parseInt(values[0]);
         if (isNaN(timestamp)) {
           console.log(`Warning: invalid timestamp value: ${values[0]}`);
-          continue; 
+          continue;
         }
         const price = parseFloat(values[1]);
         const product_id = values[2];
@@ -75,28 +74,45 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
 
         batchRows.push({ timestamp, price, product_id, customer_id, store_id });
 
-        if (batchRows.length >= 1000) { 
-          const text = 'INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) VALUES ($1, $2, $3, $4, $5)';
+        if (batchRows.length >= 1000) {
+          const text =
+            'INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) VALUES ($1, $2, $3, $4, $5)';
           for (const row of batchRows) {
-            await client.query(text, [row.timestamp, row.price, row.product_id, row.customer_id, row.store_id]);
+            await client.query(text, [
+              row.timestamp,
+              row.price,
+              row.product_id,
+              row.customer_id,
+              row.store_id,
+            ]);
           }
           totalRowsRead += batchRows.length;
-          process.stdout.write(`Inserted ${(totalRowsRead/lineCount * 100).toFixed(2)}% of total to db\n`);
+          process.stdout.write(
+            `Inserted ${((totalRowsRead / lineCount) * 100).toFixed(
+              2,
+            )}% of total to db\n`,
+          );
           batchRows = [];
         }
       }
     }
 
     if (batchRows.length > 0) {
-      const text = 'INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) VALUES ($1, $2, $3, $4, $5)';
+      const text =
+        'INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) VALUES ($1, $2, $3, $4, $5)';
       for (const row of batchRows) {
-        await client.query(text, [row.timestamp, row.price, row.product_id, row.customer_id, row.store_id]);
+        await client.query(text, [
+          row.timestamp,
+          row.price,
+          row.product_id,
+          row.customer_id,
+          row.store_id,
+        ]);
       }
       console.log(`Inserted ${totalRowsRead} rows in total.`);
     }
 
     console.log('Data imported to PostgreSQL');
-
   } catch (err) {
     console.error('Error import importCSVToPostgres func:', err);
   } finally {
@@ -105,7 +121,7 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
 }
 
 async function exportToCSV() {
-  console.log("Exporting");
+  console.log('Exporting');
   try {
     const outputFilePath = path.join(__dirname, './output.csv');
 
@@ -139,23 +155,22 @@ async function exportToCSV() {
   }
 }
 
-
 async function main() {
-    try {
-      await client.connect();
-      console.log('Connected to PostgreSQL');
+  try {
+    await client.connect();
+    console.log('Connected to PostgreSQL');
 
-      const csvFilePath = path.join(__dirname, 'large_file.csv'); 
-      const lineCount = await countRowsInCsvFile(csvFilePath);
+    const csvFilePath = path.join(__dirname, 'large_file.csv');
+    const lineCount = await countRowsInCsvFile(csvFilePath);
 
-      await importCSVToPostgres(csvFilePath, lineCount);
-      await exportToCSV();
-    } catch (err) {
-      console.error('Error main:', err);
-    } finally {
-      await client.end();
-      console.log('Disconnected from PostgreSQL');
-    }
+    await importCSVToPostgres(csvFilePath, lineCount);
+    await exportToCSV();
+  } catch (err) {
+    console.error('Error main:', err);
+  } finally {
+    await client.end();
+    console.log('Disconnected from PostgreSQL');
+  }
 }
 
 main();
