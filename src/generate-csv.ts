@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 
-// Function to generate a random Unix timestamp between two dates
 function getRandomTimestamp(start: Date, end: Date): number {
   const startTime = start.getTime();
   const endTime = end.getTime();
@@ -8,12 +7,10 @@ function getRandomTimestamp(start: Date, end: Date): number {
   return Math.floor(randomTime);
 }
 
-// Function to generate a random float with 2 decimal places
 function getRandomFloat(min: number, max: number): number {
   return parseFloat((Math.random() * (max - min) + min).toFixed(2));
 }
 
-// Function to generate a random alphanumeric hash
 function getRandomHash(length: number): string {
   const characters =
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -31,8 +28,13 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
   const bytesPerRow = 47; // Assuming each field takes a fixed number of bytes
 
   const totalRows = Math.ceil((fileSizeInMB * 1024 * 1024) / bytesPerRow);
-  let csvContent =
-    'Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n';
+  const writeStream = fs.createWriteStream(filename);
+
+  // Write header
+  writeStream.write('Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n');
+
+  // Calculate the number of rows that correspond to one step of the progress bar
+  const rowsPerStep = Math.ceil(totalRows / 100);
 
   for (let i = 0; i < totalRows; i++) {
     const timestamp = getRandomTimestamp(start, end);
@@ -40,12 +42,23 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
     const productID = getRandomHash(10);
     const customerID = getRandomHash(10);
     const storeID = Math.floor(Math.random() * 1000) + 1;
-    csvContent += `${timestamp},${price},${productID},${customerID},${storeID}\n`;
+
+    // Write directly to the file
+    writeStream.write(`${timestamp},${price},${productID},${customerID},${storeID}\n`);
+
+    // If we've completed another step, print a '#' character and the percentage to the console
+    if (i % rowsPerStep === 0) {
+      const percentage = Math.round((i / totalRows) * 100);
+      process.stdout.cursorTo(0);
+      process.stdout.write('#'.repeat(percentage / 2) + ` ${percentage}%`);
+    }
   }
 
-  fs.writeFileSync(filename, csvContent);
-  console.log(`CSV file "${filename}" generated successfully.`);
+  writeStream.end();
+
+  // Print a newline character so the next console output isn't on the same line as the progress bar
+  console.log('\nCSV file "' + filename + '" generated successfully.');
 }
 
 // Usage: generateCSVFile(filename, fileSizeInMB)
-generateCSVFile('src/large_file.csv', 200);
+generateCSVFile('src/large_file.csv', 1000);
