@@ -27,10 +27,12 @@ sudo docker build -t sortcsv .
 sudo docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -m 300m -d postgres:latest
 sudo docker run --name sortcsv --link postgres:postgres -p 3000:3000 -m 200m -d sortcsv
 sudo docker logs sortcsv
+sudo docker cp sortcsv:/app/output.csv .
+ts-node src/verify.ts
 ``
 
 ## When run complete:
 ``sh
-sudo docker cp sortcsv:/app/src/output.csv .
+sudo docker cp sortcsv:/app/output.csv .
 ts-node src/verify.ts
 ``

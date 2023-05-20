@@ -50,7 +50,7 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
     if (i % rowsPerStep === 0) {
       const percentage = Math.round((i / totalRows) * 100);
       process.stdout.cursorTo(0);
-      process.stdout.write('#'.repeat(percentage / 2) + ` ${percentage}%`);
+      process.stdout.write('#'.repeat(percentage / 2) + ` ${percentage}% complete`);
     }
   }
 
