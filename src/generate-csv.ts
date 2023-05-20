@@ -46,4 +46,4 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
 }
 
 // Usage: generateCSVFile(filename, fileSizeInMB)
-generateCSVFile('src/large_file.csv', 10);
+generateCSVFile('src/large_file.csv', 200);

@@ -29,7 +29,7 @@ sudo docker run --name sortcsv --link postgres:postgres -p 3000:3000 -m 200m -d 
 sudo docker logs sortcsv
 ``
 
-## When complete run:
+## When run complete:
 ``sh
 sudo docker cp sortcsv:/app/src/output.csv .
 ts-node src/verify.ts
