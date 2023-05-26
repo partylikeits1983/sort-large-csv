@@ -11,6 +11,7 @@ Using docker in order to containerize the code to simulate a machine with limite
 
 ## Note:
 The import script has 200 mb of ram and the postgres server has 300 mb of ram
+The 
 
 
 #### Note to dev:
@@ -44,7 +45,6 @@ done
 sudo docker cp sortcsv:/app/src/output.csv .
 ts-node src/verify.ts
 ``
-
 
 ## @dev misc docker commands: 
 ### build container

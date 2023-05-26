@@ -1,5 +1,3 @@
-// Method of directly reading CSV to postgres
-
 import { Client } from 'pg';
 import * as copyTo from 'pg-copy-streams';
 import * as fs from 'fs';
@@ -14,6 +12,12 @@ const client = new Client({
   port: 5432,
 });
 
+/**
+ * Counts the number of rows in a CSV file.
+ *
+ * @param {string} filePath - The path of the CSV file to count rows from.
+ * @returns {Promise<number>} - A promise that resolves with the number of rows in the CSV file.
+ */
 async function countRowsInCsvFile(filePath: string) {
   const readInterface = readline.createInterface({
     input: fs.createReadStream(filePath),
@@ -28,6 +32,13 @@ async function countRowsInCsvFile(filePath: string) {
   return linesCount;
 }
 
+/**
+ * Imports a CSV file into PostgreSQL database.
+ *
+ * @param {string} csvFilePath - The path of the CSV file to import.
+ * @param {number} lineCount - The number of lines to process from the CSV file.
+ * @returns {Promise<void>} - A promise that resolves when the import is completed.
+ */
 async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
     try {
       await client.query(`
@@ -102,7 +113,11 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
     }
   }
   
-
+/**
+ * Exports data to a CSV file.
+ *
+ * @returns {Promise<void>} - A promise that resolves when the export to CSV is completed.
+ */
 async function exportToCSV() {
   console.log('Exporting');
   try {
@@ -122,7 +137,6 @@ async function exportToCSV() {
     const fileStream = fs.createWriteStream(outputFilePath);
     stream.pipe(fileStream);
 
-    // Return a promise that resolves when the 'end' event is emitted
     return new Promise<void>((resolve, reject) => {
       fileStream.on('finish', () => {
         console.log('Export completed successfully!');
