@@ -1,6 +1,6 @@
 # Sort Large CSV Files with Limited Resources
 
-This repository demonstrates how to use PostgreSQL for external sorting of large CSV files, especially on a machine with limited resources. Docker is used for containerization, enabling us to simulate an environment with specific hardware constraints.
+This repository demonstrates how to use PostgreSQL for external sorting of large CSV files, especially on a machine with limited resources. Docker is used for containerization, enabling to simulate an environment with specific hardware constraints.
 
 ## How It Works:
 
