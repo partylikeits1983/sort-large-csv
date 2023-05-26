@@ -1,6 +1,6 @@
 ## Sort Large CSV file on machine with limited resources
 
-This repository is an example of how to use postgreSQL for external sort of a large CSV file
+This repository is an example of how to use postgreSQL for external sort of a large CSV file.
 Using docker in order to containerize the code to simulate a machine with limited resources.
 
 
@@ -29,7 +29,7 @@ sudo docker logs sortcsv
 ``
 
 ## View status of import
-``sh
+```sh
 function getLogs() {
     sudo docker logs sortcsv
 }
@@ -38,7 +38,7 @@ while true; do
   getLogs
   sleep 5
 done
-``
+```
 
 ## Wait for import to complete. When complete, run:
 ``sh
