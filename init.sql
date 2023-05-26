@@ -5,5 +5,5 @@ CREATE TABLE csv_data (
   product_id VARCHAR(20),
   customer_id VARCHAR(20),
   cc_number VARCHAR(20),
-  store_id INTEGER
+  store_id VARCHAR(20)
 );

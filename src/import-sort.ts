@@ -47,7 +47,7 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
           price numeric,
           product_id varchar,
           customer_id varchar,
-          store_id varchar
+          store_id varchar 
         )
       `);
   
@@ -74,7 +74,7 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
           const price = parseFloat(values[1]);
           const product_id = values[2];
           const customer_id = values[3];
-          const store_id = parseInt(values[5]);
+          const store_id = values[4];
   
           batchRows.push(`(${timestamp}, ${price}, '${product_id}', '${customer_id}', '${store_id}')`);
   

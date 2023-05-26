@@ -36,17 +36,23 @@ function getLogs() {
 
 while true; do
   getLogs
-  sleep 5
+  sleep 3
 done
 ```
 
 ## Wait for import to complete, when finished, run:
 Note that you must wait for postgres to finish sorting, else, the output.csv will not be complete.
+When the output file is the same size as the inputfile, sorting has completed.
 
 ``sh
 sudo docker cp sortcsv:/app/src/output.csv .
 ts-node src/verify.ts
 ``
+
+
+
+
+
 
 
 

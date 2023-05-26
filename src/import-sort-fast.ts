@@ -34,7 +34,7 @@ async function importCSVToPostgres(csvFilePath: string) {
           price numeric,
           product_id varchar,
           customer_id varchar,
-          store_id varchar
+          store_id numeric 
         )
       `);
   
