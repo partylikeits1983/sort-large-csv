@@ -1,3 +1,5 @@
+// Method of directly reading CSV to postgres
+
 import { Client } from 'pg';
 import * as copyTo from 'pg-copy-streams';
 import * as fs from 'fs';

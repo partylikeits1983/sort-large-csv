@@ -64,7 +64,7 @@ async function importCSVToPostgres(csvFilePath: string) {
 async function exportToCSV() {
   console.log('Exporting');
   try {
-    const outputFilePath = path.join(__dirname, './output.csv');
+    const outputFilePath = path.join(__dirname, './output/sortedOutput.csv');
 
     const query = `
       COPY (

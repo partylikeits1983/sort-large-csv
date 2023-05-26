@@ -25,7 +25,7 @@ function getRandomHash(length: number): string {
 function generateCSVFile(filename: string, fileSizeInMB: number): void {
   const start = new Date('2015-01-01');
   const end = new Date();
-  const bytesPerRow = 47; // Assuming each field takes a fixed number of bytes
+  const bytesPerRow = 47;
 
   const totalRows = Math.ceil((fileSizeInMB * 1024 * 1024) / bytesPerRow);
   const writeStream = fs.createWriteStream(filename);
@@ -33,7 +33,7 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
   // Write header
   writeStream.write('Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n');
 
-  // Calculate the number of rows that correspond to one step of the progress bar
+  // progress bar
   const rowsPerStep = Math.ceil(totalRows / 100);
 
   for (let i = 0; i < totalRows; i++) {
@@ -50,7 +50,7 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
     if (i % rowsPerStep === 0) {
       const percentage = Math.round((i / totalRows) * 100);
       process.stdout.cursorTo(0);
-      process.stdout.write('#'.repeat(percentage / 2) + ` ${percentage}% complete`);
+      process.stdout.write('Generating large CSV: ' + '#'.repeat(percentage / 2) + `${percentage}% complete`);
     }
   }
 
@@ -61,4 +61,4 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
 }
 
 // Usage: generateCSVFile(filename, fileSizeInMB)
-generateCSVFile('src/large_file.csv', 1000);
+generateCSVFile('src/large_file.csv', 100);
