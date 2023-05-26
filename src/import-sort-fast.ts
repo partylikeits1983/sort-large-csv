@@ -27,8 +27,8 @@ async function countRowsInCsvFile(filePath: string) {
 }
 
 async function importCSVToPostgres(csvFilePath: string) {
-    try {
-      await client.query(`
+  try {
+    await client.query(`
         CREATE TABLE IF NOT EXISTS csv_data (
           timestamp bigint,
           price numeric,
@@ -37,28 +37,27 @@ async function importCSVToPostgres(csvFilePath: string) {
           store_id numeric 
         )
       `);
-  
-      console.log('Created table "csv_data"');
-  
-      const copyQuery = `
+
+    console.log('Created table "csv_data"');
+
+    const copyQuery = `
         COPY csv_data (timestamp, price, product_id, customer_id, store_id)
         FROM STDIN WITH (FORMAT csv, HEADER true)
       `;
-      
-      const stream = fs.createReadStream(csvFilePath);
-      const copyStream = client.query(copyTo.from(copyQuery));
-      stream.pipe(copyStream);
-  
-      return new Promise<void>((resolve, reject) => {
-        copyStream.on('end', resolve);
-        copyStream.on('error', reject);
-      });
-  
-    } catch (err) {
-      console.error('Error in importCSVToPostgres func:', err);
-    } finally {
-      console.log('Data import completed');
-    }
+
+    const stream = fs.createReadStream(csvFilePath);
+    const copyStream = client.query(copyTo.from(copyQuery));
+    stream.pipe(copyStream);
+
+    return new Promise<void>((resolve, reject) => {
+      copyStream.on('end', resolve);
+      copyStream.on('error', reject);
+    });
+  } catch (err) {
+    console.error('Error in importCSVToPostgres func:', err);
+  } finally {
+    console.log('Data import completed');
+  }
 }
 
 async function exportToCSV() {
@@ -100,7 +99,6 @@ async function exportToCSV() {
     console.error('Export failed:', error);
   }
 }
-
 
 async function main() {
   try {

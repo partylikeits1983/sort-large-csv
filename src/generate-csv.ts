@@ -31,7 +31,9 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
   const writeStream = fs.createWriteStream(filename);
 
   // Write header
-  writeStream.write('Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n');
+  writeStream.write(
+    'Unix Timestamp,Price,Product ID,Customer ID,CC Number,Store ID\n',
+  );
 
   // progress bar
   const rowsPerStep = Math.ceil(totalRows / 100);
@@ -44,13 +46,19 @@ function generateCSVFile(filename: string, fileSizeInMB: number): void {
     const storeID = Math.floor(Math.random() * 1000) + 1;
 
     // Write directly to the file
-    writeStream.write(`${timestamp},${price},${productID},${customerID},${storeID}\n`);
+    writeStream.write(
+      `${timestamp},${price},${productID},${customerID},${storeID}\n`,
+    );
 
     // If we've completed another step, print a '#' character and the percentage to the console
     if (i % rowsPerStep === 0) {
       const percentage = Math.round((i / totalRows) * 100);
       process.stdout.cursorTo(0);
-      process.stdout.write('Generating large CSV: ' + '#'.repeat(percentage / 2) + `${percentage}% complete`);
+      process.stdout.write(
+        'Generating large CSV: ' +
+          '#'.repeat(percentage / 2) +
+          `${percentage}% complete`,
+      );
     }
   }
 

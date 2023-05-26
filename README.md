@@ -4,9 +4,9 @@ This repository demonstrates how to use PostgreSQL for external sorting of large
 
 ## How It Works:
 
-1) **Generate a large mock CSV file**: You can specify the file size (in MB) as per your needs.
-2) **Build two Docker containers**: One is for importing the large CSV file, and the other one is for running the PostgreSQL server.
-3) **Execute the Docker containers to sort the CSV file**: These containers operate within the defined resource limits.
+1. **Generate a large mock CSV file**: You can specify the file size (in MB) as per your needs.
+2. **Build two Docker containers**: One is for importing the large CSV file, and the other one is for running the PostgreSQL server.
+3. **Execute the Docker containers to sort the CSV file**: These containers operate within the defined resource limits.
 
 > **Resource Allocation Note**: The import script is allocated 200 MB of RAM, while the PostgreSQL server is given 300 MB of RAM.
 

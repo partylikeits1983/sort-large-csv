@@ -40,8 +40,8 @@ async function countRowsInCsvFile(filePath: string) {
  * @returns {Promise<void>} - A promise that resolves when the import is completed.
  */
 async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
-    try {
-      await client.query(`
+  try {
+    await client.query(`
         CREATE TABLE IF NOT EXISTS csv_data (
           timestamp bigint,
           price numeric,
@@ -50,69 +50,73 @@ async function importCSVToPostgres(csvFilePath: string, lineCount: number) {
           store_id varchar 
         )
       `);
-  
-      console.log('Created table "csv_data"');
-  
-      const stream = fs.createReadStream(csvFilePath, { encoding: 'utf-8' });
-      let buffer = '';
-      let totalRowsRead = 0;
-      let batchRows: Array<string> = [];
-  
-      for await (const chunk of stream) {
-        buffer += chunk;
-  
-        const rows = buffer.trim().split('\n');
-        buffer = rows.pop() ?? '';
-  
-        for (const row of rows) {
-          const values = row.split(',');
-          const timestamp = parseInt(values[0]);
-          if (isNaN(timestamp)) {
-            console.log(`Warning: invalid timestamp value: ${values[0]}`);
-            continue;
-          }
-          const price = parseFloat(values[1]);
-          const product_id = values[2];
-          const customer_id = values[3];
-          const store_id = values[4];
-  
-          batchRows.push(`(${timestamp}, ${price}, '${product_id}', '${customer_id}', '${store_id}')`);
-  
-          if (batchRows.length >= 1000) {
-            await client.query(`
+
+    console.log('Created table "csv_data"');
+
+    const stream = fs.createReadStream(csvFilePath, { encoding: 'utf-8' });
+    let buffer = '';
+    let totalRowsRead = 0;
+    let batchRows: Array<string> = [];
+
+    for await (const chunk of stream) {
+      buffer += chunk;
+
+      const rows = buffer.trim().split('\n');
+      buffer = rows.pop() ?? '';
+
+      for (const row of rows) {
+        const values = row.split(',');
+        const timestamp = parseInt(values[0]);
+        if (isNaN(timestamp)) {
+          console.log(`Warning: invalid timestamp value: ${values[0]}`);
+          continue;
+        }
+        const price = parseFloat(values[1]);
+        const product_id = values[2];
+        const customer_id = values[3];
+        const store_id = values[4];
+
+        batchRows.push(
+          `(${timestamp}, ${price}, '${product_id}', '${customer_id}', '${store_id}')`,
+        );
+
+        if (batchRows.length >= 1000) {
+          await client.query(`
               INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) 
-              VALUES ${batchRows.join(", ")}
+              VALUES ${batchRows.join(', ')}
             `);
-            totalRowsRead += batchRows.length;
-            process.stdout.write(
-              `Inserted ${((totalRowsRead / lineCount) * 100).toFixed(2)}% of total to db\n`,
-            );
-            batchRows = [];
-          }
+          totalRowsRead += batchRows.length;
+          process.stdout.write(
+            `Inserted ${((totalRowsRead / lineCount) * 100).toFixed(
+              2,
+            )}% of total to db\n`,
+          );
+          batchRows = [];
         }
       }
-  
-      if (batchRows.length > 0) {
-        await client.query(`
-          INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) 
-          VALUES ${batchRows.join(", ")}
-        `);
-        console.log(`Inserted ${totalRowsRead} rows in total.`);
-      }
-  
+    }
+
+    if (batchRows.length > 0) {
       await client.query(`
+          INSERT INTO csv_data (timestamp, price, product_id, customer_id, store_id) 
+          VALUES ${batchRows.join(', ')}
+        `);
+      console.log(`Inserted ${totalRowsRead} rows in total.`);
+    }
+
+    await client.query(`
         CREATE INDEX idx_timestamp ON csv_data (timestamp);
       `);
-      console.log('Created index on "timestamp"');
-  
-      console.log('Data imported to PostgreSQL');
-    } catch (err) {
-      console.error('Error in importCSVToPostgres func:', err);
-    } finally {
-      console.log('Data import completed');
-    }
+    console.log('Created index on "timestamp"');
+
+    console.log('Data imported to PostgreSQL');
+  } catch (err) {
+    console.error('Error in importCSVToPostgres func:', err);
+  } finally {
+    console.log('Data import completed');
   }
-  
+}
+
 /**
  * Exports data to a CSV file.
  *
