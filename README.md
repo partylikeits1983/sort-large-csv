@@ -42,7 +42,7 @@ done
 
 ## Completion and Verification
 
-Wait for the import process to complete. If you proceed before the sorting process finishes, the `output.csv` will not be complete. When the output file's size matches the input file's size, you can consider the sorting as completed.
+Wait for the import process to complete. If you proceed before the sorting process finishes, the `output.csv` will not be complete. When the output file's size matches the input file's size, you can consider the sorting as completed. The output.csv will be in ascending order when postgres is complete.
 
 Execute the following commands to copy the output file and verify the results:
 
