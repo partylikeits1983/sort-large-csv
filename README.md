@@ -1,34 +1,34 @@
-## Sort Large CSV file on machine with limited resources
+# Sort Large CSV Files with Limited Resources
 
-This repository is an example of how to use postgreSQL for external sort of a large CSV file.
-Using docker in order to containerize the code to simulate a machine with limited resources.
+This repository demonstrates how to use PostgreSQL for external sorting of large CSV files, especially on a machine with limited resources. Docker is used for containerization, enabling us to simulate an environment with specific hardware constraints.
 
+## How It Works:
 
-## How this code works:
-1) Generate large mock CSV file (you can specify the size in MB)
-2) Build two docker containers: one for the import of the large csv, the other for postgres
-3) Run the docker containers to sort the CSV.
+1) **Generate a large mock CSV file**: You can specify the file size (in MB) as per your needs.
+2) **Build two Docker containers**: One is for importing the large CSV file, and the other one is for running the PostgreSQL server.
+3) **Execute the Docker containers to sort the CSV file**: These containers operate within the defined resource limits.
 
-## Note:
-The import script has 200 mb of ram and the postgres server has 300 mb of ram
-The 
+> **Resource Allocation Note**: The import script is allocated 200 MB of RAM, while the PostgreSQL server is given 300 MB of RAM.
 
+> **Developer's Note**: Before running the commands listed below, ensure that you do not have a PostgreSQL server running on port 5432 already.
 
-#### Note to dev:
-Before running commands below, make sure you do not have a postgres server already running on port 5432
+## Running the CSV Sort Procedure:
 
+Execute the following shell commands in the order they are presented:
 
-## Run CSV sort:
-``sh
+```sh
 ts-node src/generate-csv.ts
 sudo docker rm -f $(sudo docker ps -a -q)
 sudo docker build -t sortcsv .
 sudo docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -m 200m -d postgres:latest
 sudo docker run --name sortcsv --link postgres:postgres -p 3000:3000 -m 300m -d sortcsv
 sudo docker logs sortcsv
-``
+```
 
-## View status of import
+## Monitoring the Import Status
+
+Use the script below to continuously check the import status:
+
 ```sh
 function getLogs() {
     sudo docker logs sortcsv
@@ -40,37 +40,39 @@ while true; do
 done
 ```
 
-## Wait for import to complete, when finished, run:
-Note that you must wait for postgres to finish sorting, else, the output.csv will not be complete.
-When the output file is the same size as the inputfile, sorting has completed.
+## Completion and Verification
 
-``sh
+Wait for the import process to complete. If you proceed before the sorting process finishes, the `output.csv` will not be complete. When the output file's size matches the input file's size, you can consider the sorting as completed.
+
+Execute the following commands to copy the output file and verify the results:
+
+```sh
 sudo docker cp sortcsv:/app/src/output.csv .
 ts-node src/verify.ts
-``
+```
 
+## Miscellaneous Docker Commands for Developers
 
+#### Building the container:
 
-
-
-
-
-
-## @dev misc docker commands: 
-### build container
-``sh
+```sh
 sudo docker build -t sortcsv .
-``
+```
 
-### Start postgres container
-``sh
+#### Starting the PostgreSQL container:
+
+```sh
 sudo docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:latest
-``
+```
 
-### start script
-``sh
+#### Starting the sorting script:
+
+```sh
 sudo docker run --name sortcsv -e POSTGRES_PASSWORD=password -p 5432:5432 -d sortcsv
-``
+```
 
-### rm all containers at once 
+#### Removing all containers at once:
+
+```sh
 sudo docker rm -f $(sudo docker ps -a -q)
+```
